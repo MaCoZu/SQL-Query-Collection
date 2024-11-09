@@ -1,13 +1,33 @@
 -- LEETCODE: 
 
+-- 1327. List the Products Ordered in a Period
+SELECT p.product_name, SUM(unit) unit
+FROM Products p JOIN Orders o ON p.product_id = o.product_id
+WHERE DATE_FORMAT(order_date, "%Y-%m") = '2020-02'
+GROUP BY p.product_name
+HAVING SUM(unit) >= 100
+
+-- 1484. Group Sold Products By The Date
+SELECT sell_date, COUNT(DISTINCT(product)) num_sold, 
+    GROUP_CONCAT(DISTINCT product ORDER BY product ASC SEPARATOR ',') products
+FROM Activities
+GROUP BY sell_date
+ORDER BY sell_date
+
+-- 196. Delete Duplicate Emails
+DELETE A 
+FROM Person A, Person B
+WHERE A.Email = B.Email 
+AND A.Id > B.Id
+
 -- 176. Second Highest Salary
 SELECT IFNULL(  
-    -- putting the whole statement in IFNULL, to avoid emty result                                   
-    (SELECT DISTINCT salary
-     FROM Employee
-     ORDER BY salary DESC
-     -- OFFSET lets us skip the first row
-     LIMIT 1 OFFSET 1), NULL) AS SecondHighestSalary;
+-- putting the whole statement in IFNULL, to avoid emty result                                   
+(SELECT DISTINCT salary
+    FROM Employee
+    ORDER BY salary DESC
+    -- OFFSET lets us skip the first row
+    LIMIT 1 OFFSET 1), NULL) AS SecondHighestSalary;
 
 --  1527. Patients With a Condition
 SELECT patient_id, patient_name, conditions
@@ -181,6 +201,7 @@ WHERE rn=1;
 SELECT activity_date AS day, COUNT(DISTINCT(user_id)) AS active_users 
 FROM (SELECT activity_date, user_id
         FROM Activity 
+        -- SUBDATE subtracts days from a date
         WHERE activity_date > SUBDATE("2019-07-27", 30) 
         AND activity_date <= "2019-07-27") sub
 GROUP BY activity_date 

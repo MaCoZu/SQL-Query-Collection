@@ -3,6 +3,27 @@
 
 -- HACKER RANK 
 
+
+-- SQL Project Planning
+WITH ProjectGroups AS (
+    SELECT*, 
+    -- by subtrackting the row number from the start date, all consecutive dates get the same number
+    DATE(Start_Date) - ROW_NUMBER() OVER (ORDER BY Start_Date) AS ProjectGroup
+    FROM Projects)
+
+SELECT Project_Start, Project_End
+FROM
+(SELECT MIN(Start_Date) AS Project_Start,
+    MAX(End_Date) AS Project_End,
+    -- + 1 because DATEDIFF gives the difference in days excluding the start date itself<
+    DATEDIFF(MAX(End_Date), MIN(Start_Date)) + 1 AS 
+    
+    
+FROM ProjectGroups
+GROUP BY ProjectGroup
+ORDER BY Duration ASC, Project_Start ASC) sub
+
+
 -- Contest Leaderboard
 SELECT a.hacker_id, b.name, SUM(a.score) AS total_score
 FROM (SELECT hacker_id, challenge_id, MAX(score) AS score
