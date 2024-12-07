@@ -3,6 +3,93 @@
 
 -- HACKER RANK 
 
+WITH subs AS (
+    SELECT challenge_id,
+        SUM(total_submissions) AS total_submissions,
+        SUM(total_accepted_submissions) AS total_accepted_submissions
+    FROM Submission_Stats
+    GROUP BY challenge_id
+)
+
+, views AS (
+    SELECT  
+        challenge_id,
+        SUM(total_views) AS total_views,
+        SUM(total_unique_views) AS total_unique_views
+    FROM View_Stats
+    GROUP BY challenge_id
+)
+
+SELECT 
+    ct.contest_id, 
+    ct.hacker_id, 
+    ct.name,
+    total_views,
+    total_unique_views,
+    total_submissions,
+    total_accepted_submissions
+FROM Contests ct JOIN Colleges cl ON ct.contest_id = cl.contest_id
+JOIN Challenges cg ON cl.college_id = cg.college_id
+LEFT JOIN subs ON cg.challenge_id = subs.challenge_id
+LEFT JOIN views ON cg.challenge_id = views.challenge_id
+WHERE total_views + total_unique_views + total_submissions + total_accepted_submissions > 0
+GROUP BY ct.contest_id, ct.hacker_id, ct.name
+ORDER BY ct.contest_id
+
+
+
+
+select con.contest_id
+        , con.hacker_id
+        , con.name
+        , sum(total_submissions)
+        , sum(total_accepted_submissions)
+        , sum(total_views)
+        , sum(total_unique_views)
+from contests as con 
+join colleges as col on con.contest_id = col.contest_id 
+join challenges as cha on  col.college_id = cha.college_id 
+left join views on cha.challenge_id = views.challenge_id
+left join subm on cha.challenge_id = subm.challenge_id
+
+group by con.contest_id, con.hacker_id, con.name
+having sum(total_submissions) + 
+        sum(total_accepted_submissions) + 
+        sum(total_views) + 
+        sum(total_unique_views) > 0
+order by con.contest_id
+
+
+
+-- Draw The Triangle 2
+WITH RECURSIVE cte AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1
+    FROM cte
+    WHERE n < 20
+)
+SELECT REPEAT('* ', n) AS stars
+FROM cte;
+
+-- Draw The Triangle 1
+WITH RECURSIVE cte AS (
+    SELECT 20 AS n
+    UNION ALL
+    SELECT n - 1
+    FROM cte
+    WHERE n > 1
+)
+SELECT REPEAT('* ', n) AS stars
+FROM cte;
+
+-- Symmetric Pairs
+SELECT A.X, A.Y
+FROM Functions A JOIN Functions B ON (A.X = B.Y AND A.Y = B.X)
+WHERE A.X <= A.Y
+GROUP BY A.X, A.Y
+HAVING COUNT(*)>1 OR A.X < A.Y
+ORDER BY A.X ASC
 
 -- SQL Project Planning
 WITH ProjectGroups AS (
